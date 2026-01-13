@@ -8,125 +8,116 @@ import route_plan from '../images/route-plan.png';
 import icon_2 from '../images/icon-2.png';
 import { SlArrowDown, SlArrowUp } from "react-icons/sl";
 
-function FlightCard({flightData, setBookFlightData }) {
-    const { isAuthenticated } = useContext(AuthContext);
-    const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(true);
-    const [FDBtnActive, setFDBtnActive] = useState(false);
+const API_BASE = process.env.REACT_APP_BACKEND_URL;
 
+function FlightCard({ flightData, setBookFlightData }) {
+  const { isAuthenticated } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [showDetails, setShowDetails] = useState(false);
 
-    const { flightNo, from, to, category, date, departureTime, duration, arrivalTime, price, aircraft, airline, stops } = flightData;
+  const {
+    flightNo,
+    from,
+    to,
+    category,
+    date,
+    departureTime,
+    duration,
+    arrivalTime,
+    price,
+    aircraft,
+    airline,
+    stops
+  } = flightData;
 
-    async function book_flight(event) {
-        event.preventDefault();
-        if (!isAuthenticated) {
-            toast.error("Login first to book flight");
-            navigate('/login');
-            return;
-        }
+  const bookFlight = async (e) => {
+    e.preventDefault();
 
-        try {
-            setIsLoading(true)
-            const response = await fetch('http://127.0.0.1:8080/api/canbook', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify({ flightNo })
-            });
-
-            const data = await response.json();
-            if (data.canbook) {
-                setBookFlightData(flightData);
-                navigate('/book_flight');
-                setTimeout(() => {
-                    setIsLoading(false)
-                }, 1500);
-            } else {
-                toast.error(data.message || "Booking failed");
-            }
-        } catch (error) {
-            toast.error("Network error, please try again later");
-        }
+    if (!isAuthenticated) {
+      toast.error("Login first to book flight");
+      navigate('/login');
+      return;
     }
 
-    function toggleFlightDetails() {
-        setFDBtnActive(!FDBtnActive);
-    }
+    try {
+      const response = await fetch(`${API_BASE}/api/canbook`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ flightNo })
+      });
 
-    return (
-        <div className="flight-card">
-            <div className="flight-block">
-                <div className="flight-area">
-                    <div className="airline-name">
-                        <img src={icon_2} alt="United Dubai Airlines" className="airline-logo" />
-                        <div className="airline-info">
-                            <h5 className="airline-name-text">{airline}</h5>
-                            <h6 className="aircraft-type">{aircraft}</h6>
-                        </div>
-                    </div>
-                    <div className="flight-detail">
-                        <div className="flight-departure">
-                            <h5 className="departure-time">{departureTime}</h5>
-                            <h5 className="departure-location">{from}</h5>
-                        </div>
-                        <div className="from-to-wrapper">
-                            <span>To</span>
-                            <div className="from-to">
-                                <h5 className="duration">{duration}</h5>
-                                <img src={route_plan} alt="Route Plan" className="route-plan" />
-                                <h6 className="stops">{stops} Stop</h6>
-                            </div>
-                            <span>From</span>
-                        </div>
-                        <div className="flight-departure">
-                            <h5 className="arrival-time">{arrivalTime}</h5>
-                            <h5 className="arrival-location">{to}</h5>
-                        </div>
-                    </div>
-                    <div className="flight-button">
-                        <div className="amount">
-                            <h6 className="price-label">Price</h6>
-                            <h5 className="price">${price}</h5>
-                        </div>
-                        <button onClick={book_flight} className="book-button">Book Now</button>
-                    </div>
-                </div>
-                <hr className="separator" />
-                <div className="flight-summary">
-                    <h5 className="flight-date">{date}</h5>
-                    <div>
-                        <button onClick={toggleFlightDetails} className="flight-detail-button">
-                            {FDBtnActive?(<><SlArrowUp className='arrow-icon'/>Flight Detail</>):(<><SlArrowDown className='arrow-icon'/>Flight Detail</>)}
-                        </button>
-                    </div>
-                </div>
+      const data = await response.json();
+
+      if (response.ok && data.canbook) {
+        setBookFlightData(flightData);
+        navigate('/book_flight');
+      } else {
+        toast.error(data.message || "Booking failed");
+      }
+    } catch (err) {
+      toast.error("Network error, please try again later");
+      console.error(err);
+    }
+  };
+
+  return (
+    <div className="flight-card">
+      <div className="flight-block">
+        <div className="flight-area">
+          <div className="airline-name">
+            <img src={icon_2} alt="Airline" className="airline-logo" />
+            <div>
+              <h5>{airline}</h5>
+              <h6>{aircraft}</h6>
+            </div>
+          </div>
+
+          <div className="flight-detail">
+            <div>
+              <h5>{departureTime}</h5>
+              <h5>{from}</h5>
             </div>
 
-            {FDBtnActive && (
-                <div id="unitedDubai" className="flight-detail-section">
-                    <div className="flight-times">
-                        <h6 className="flight-date-detail">{date}</h6>
-                        <h6 className="detailed-departure-time">{`Monday, ${date} - ${departureTime}`}</h6>
-                        <h6 className="detailed-duration">{duration}</h6>
-                        <h6 className="detailed-arrival-time">{`Monday, ${date} - ${arrivalTime}`}</h6>
-                    </div>
-                    <div className="detail-block">
-                        <div className="flight-icon-div">
-                            <img src={icon_2} alt="Flight Icon" className="flight-icon" />
-                        </div>
-                        <div className="flight-content">
-                            <h6 className="operator-name">Tpm Line</h6>
-                            <h6 className="operated-by">Operated by Feel Dubai Airlines</h6>
-                            <h6 className="flight-category">{category} | Flight {flightNo} | Aircraft {aircraft}</h6>
-                            <h6 className="luggage-info">Adult(s): 25KG luggage free</h6>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <div className="from-to">
+              <h6>{duration}</h6>
+              <img src={route_plan} alt="Route" />
+              <h6>{stops} Stop</h6>
+            </div>
+
+            <div>
+              <h5>{arrivalTime}</h5>
+              <h5>{to}</h5>
+            </div>
+          </div>
+
+          <div className="flight-button">
+            <h5>₹{price}</h5>
+            <button onClick={bookFlight}>Book Now</button>
+          </div>
         </div>
-    );
+
+        <hr />
+
+        <div className="flight-summary">
+          <span>{date}</span>
+          <button onClick={() => setShowDetails(!showDetails)}>
+            {showDetails ? <SlArrowUp /> : <SlArrowDown />} Flight Detail
+          </button>
+        </div>
+      </div>
+
+      {showDetails && (
+        <div className="flight-detail-section">
+          <h6>{category} | Flight {flightNo}</h6>
+          <h6>{departureTime} → {arrivalTime}</h6>
+          <h6>{duration}</h6>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default FlightCard;

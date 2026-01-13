@@ -1,162 +1,123 @@
-import { useState } from "react";
-import '../CSS/CreateAccount.css'; 
+import React, { useContext, useState } from 'react';
+import '../CSS/FlightCard.css';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from 'react-router-dom';
+import AuthContext from '../authContext';
+import route_plan from '../images/route-plan.png';
+import icon_2 from '../images/icon-2.png';
+import { SlArrowDown, SlArrowUp } from "react-icons/sl";
 
-function CreateAccount({ setSignIn }) {
-    const [confirmPassword, setConfirmPassword] = useState("");
+const API_BASE = process.env.REACT_APP_BACKEND_URL;
 
-    function handleConfirmPassword(event) {
-        setConfirmPassword(event.target.value);
+function FlightCard({ flightData, setBookFlightData }) {
+  const { isAuthenticated } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [showDetails, setShowDetails] = useState(false);
+
+  const {
+    flightNo,
+    from,
+    to,
+    category,
+    date,
+    departureTime,
+    duration,
+    arrivalTime,
+    price,
+    aircraft,
+    airline,
+    stops
+  } = flightData;
+
+  const bookFlight = async (e) => {
+    e.preventDefault();
+
+    if (!isAuthenticated) {
+      toast.error("Login first to book flight");
+      navigate('/login');
+      return;
     }
 
-    const [formData, setFormData] = useState({
-        firstName: "",
-        lastName: "",
-        mobile: "",
-        address: "",
-        email: "",
-        profile: "client",
-        username: "",
-        password: "",
-    });
+    try {
+      const response = await fetch(`${API_BASE}/api/canbook`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ flightNo })
+      });
 
-    function changeHandler(event) {
-        const { name, value } = event.target;
-        setFormData(prevData => ({
-            ...prevData,
-            [name]: value
-        }));
+      const data = await response.json();
+
+      if (response.ok && data.canbook) {
+        setBookFlightData(flightData);
+        navigate('/book_flight');
+      } else {
+        toast.error(data.message || "Booking failed");
+      }
+    } catch (err) {
+      toast.error("Network error, please try again later");
+      console.error(err);
     }
+  };
 
-    async function submitHandler(event) {
-        event.preventDefault();
-        if (confirmPassword !== formData.password) {
-            toast.error("Passwords do not match");
-            return;
-        }
+  return (
+    <div className="flight-card">
+      <div className="flight-block">
+        <div className="flight-area">
+          <div className="airline-name">
+            <img src={icon_2} alt="Airline" className="airline-logo" />
+            <div>
+              <h5>{airline}</h5>
+              <h6>{aircraft}</h6>
+            </div>
+          </div>
 
-        try {
-            const response = await fetch('http://127.0.0.1:8080/api/auth/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
+          <div className="flight-detail">
+            <div>
+              <h5>{departureTime}</h5>
+              <h5>{from}</h5>
+            </div>
 
-            const data = await response.json();
-            console.log(data);
+            <div className="from-to">
+              <h6>{duration}</h6>
+              <img src={route_plan} alt="Route" />
+              <h6>{stops} Stop</h6>
+            </div>
 
-            if (response.ok) {
-                toast.success("Account created successfully");
-                console.log(data);
-                setSignIn("true");
-            }
-            else if(data.message){
-                toast.error(data.message)
-            }
-            else {
-                toast.error("An error occurred, please try again");
-            }
-        } catch (error) {
-            toast.error("Network error, please try again later");
-            console.error("Network error:", error);
-        }
-    }
+            <div>
+              <h5>{arrivalTime}</h5>
+              <h5>{to}</h5>
+            </div>
+          </div>
 
-    return (
-        <div className="create-account-container rounded-2xl">
-            <form className="m-0 px-4 pb-6" onSubmit={submitHandler}>
-                <div className="name-container flex gap-2 pt-4">
-                    <div>
-                        <input 
-                        placeholder="First Name"
-                            type="text"
-                            name="firstName"
-                            onChange={changeHandler}
-                            value={formData.firstName}
-                            required
-                        ></input>
-                    </div>
-                    <div>
-                        <input 
-                        placeholder="Last Name"
-                            type="text"
-                            name="lastName"
-                            onChange={changeHandler}
-                            value={formData.lastName}
-                        ></input>
-                    </div>
-                </div>
-                <div>
-                    <input 
-                    placeholder="Mobile No."
-                        type="tel"
-                        name="mobile"
-                        onChange={changeHandler}
-                        value={formData.mobile}
-                        required
-                    ></input>
-                </div>
-                <div>
-                    <input 
-                    placeholder="Address"
-                        type="text"
-                        name="address"
-                        onChange={changeHandler}
-                        value={formData.address}
-                    ></input>
-                </div>
-                <div>
-                    <input 
-                    placeholder="Email"
-                        type="email"
-                        name="email"
-                        onChange={changeHandler}
-                        value={formData.email}
-                        required
-                    ></input>
-                </div>
-                <div>
-                    <input 
-                    placeholder="Username"
-                        type="text"
-                        name="username"
-                        onChange={changeHandler}
-                        value={formData.username}
-                        required
-                    ></input>
-                </div>
-                <div className="password-container flex gap-2">
-                    <div>
-                        <input 
-                        placeholder="Password"
-                            type="password"
-                            name="password"
-                            onChange={changeHandler}
-                            value={formData.password}
-                            required
-                        ></input>
-                    </div>
-                    <div>
-                        <input 
-                        placeholder="Confirm Password"
-                            type="password"
-                            name="confirmPassword"
-                            onChange={handleConfirmPassword}
-                            value={confirmPassword}
-                            required
-                        ></input>
-                    </div>
-                </div>
-                <div className="flex justify-center">
-                    <button className="inline text-white rounded text-l mt-6 font-bold p-2  transition duration-500 ease-in-out bg-blue-600 hover:bg-slate-300 hover:text-black transform hover:-translate-y-1 hover:scale-110 ..." type="submit">Create Account</button>
-                </div>
-               
-            </form>
+          <div className="flight-button">
+            <h5>₹{price}</h5>
+            <button onClick={bookFlight}>Book Now</button>
+          </div>
         </div>
-    );
+
+        <hr />
+
+        <div className="flight-summary">
+          <span>{date}</span>
+          <button onClick={() => setShowDetails(!showDetails)}>
+            {showDetails ? <SlArrowUp /> : <SlArrowDown />} Flight Detail
+          </button>
+        </div>
+      </div>
+
+      {showDetails && (
+        <div className="flight-detail-section">
+          <h6>{category} | Flight {flightNo}</h6>
+          <h6>{departureTime} → {arrivalTime}</h6>
+          <h6>{duration}</h6>
+        </div>
+      )}
+    </div>
+  );
 }
 
-export default CreateAccount;
+export default FlightCard;
