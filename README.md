@@ -3,7 +3,7 @@
 Welcome to **FlyNow**, a modern flight booking web application built using the **MERN** stack. FlyNow enables users to **search, book, and manage flights** with ease, featuring **secure Razorpay payment integration** for seamless transactions.
 
 🔗 **Live Demo:** [https://flynow-five.vercel.app/](https://flynow-five.vercel.app/)  
-🔗 **GitHub Repo:** [github.com/rupangkan25/FlyNow-Flight-Booking-Website](https://github.com/rupangkan25/FlyNow-Flight-Booking-Website)
+🔗 **GitHub Repo:** [github.com/Samik123Mit/FlyNow-Flight-Booking-Website](https://github.com/Samik123Mit/FlyNow-Flight-Booking-Website)
 
 ---
 
