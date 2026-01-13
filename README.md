@@ -38,7 +38,7 @@ FlyNow provides:
 ### Clone the repository
 
 ```bash
-git clone https://github.com/rupangkan25/FlyNow-Flight-Booking-Website.git
+git clone https://github.com/Samik123Mit/FlyNow-Flight-Booking-Website
 ```
 
 ### Setup Frontend
