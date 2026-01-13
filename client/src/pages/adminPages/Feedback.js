@@ -1,125 +1,139 @@
-import Layout from './Layout';
-import React, { useEffect, useState } from 'react';
+import Layout from "./Layout";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "../../CSS/Feedback.css"; // Import the feedback-specific CSS
-import Loading from '../../components/Loading';
+import "../../CSS/Feedback.css";
+import Loading from "../../components/Loading";
+
+// backend base url
+const API_BASE = process.env.REACT_APP_BACKEND_URL;
 
 const Feedback = () => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [filters, setFilters] = useState({
-    date: ''
-  });
+  const [filters, setFilters] = useState({ date: "" });
   const [sortConfig, setSortConfig] = useState({
-    key: 'date',
-    direction: 'descending'
+    key: "date",
+    direction: "descending",
   });
 
-  async function fetch_data() {
+  const fetchFeedbacks = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/feedback/getAllFeedback', { // Update the URL
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-      });
+      const response = await fetch(
+        `${API_BASE}/api/feedback/getAllFeedback`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       const data = await response.json();
 
-      if (response.ok) {
-        setFeedbacks(data.feedbacks);
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 1500);
-      } else {
-        console.log(data);
-        toast.error(data.message || "Error Occurred");
+      if (!response.ok) {
+        toast.error(data.message || "Error occurred");
+        return;
       }
+
+      setFeedbacks(data.feedbacks || []);
     } catch (error) {
-      console.log(error);
       toast.error("Network error, please try again later");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetch_data();
+    fetchFeedbacks();
   }, []);
 
   const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters({ ...filters, [name]: value });
+    setFilters({ ...filters, [e.target.name]: e.target.value });
   };
 
   const handleSort = (key) => {
-    let direction = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
     }
     setSortConfig({ key, direction });
   };
 
-  const sortedFeedbacks = feedbacks.sort((a, b) => {
+  const sortedFeedbacks = [...feedbacks].sort((a, b) => {
     if (a[sortConfig.key] < b[sortConfig.key]) {
-      return sortConfig.direction === 'ascending' ? -1 : 1;
+      return sortConfig.direction === "ascending" ? -1 : 1;
     }
     if (a[sortConfig.key] > b[sortConfig.key]) {
-      return sortConfig.direction === 'ascending' ? 1 : -1;
+      return sortConfig.direction === "ascending" ? 1 : -1;
     }
     return 0;
   });
 
-  const filteredFeedbacks = sortedFeedbacks.filter(feedback => {
-    const filterDate = filters.date ? new Date(filters.date) : null;
-    const feedbackDate = feedback.date ? new Date(feedback.date) : null;
-    return (
-      (!filters.date || (filterDate && feedbackDate && filterDate.toDateString() === feedbackDate.toDateString()))
-    );
+  const filteredFeedbacks = sortedFeedbacks.filter((feedback) => {
+    if (!filters.date) return true;
+    const filterDate = new Date(filters.date).toDateString();
+    const feedbackDate = new Date(feedback.date).toDateString();
+    return filterDate === feedbackDate;
   });
 
   return (
-    <>
-      <div className={isLoading ? 'loading' : 'loaded'}>
-        <Loading isLoading={isLoading} />
-        <div className="content_">
-          <Layout>
-            <div className="box-feedback">
-              <h2>Feedback</h2>
-              <div className="filter-section-feedback">
-                <label htmlFor="date-filter">Filter by Date:</label>
-                <input
-                  type="date"
-                  id="date-filter"
-                  name="date"
-                  value={filters.date}
-                  onChange={handleFilterChange}
-                />
-              </div>
-              <div className="sort-section-feedback">
-                
-                <button onClick={() => handleSort('date')}>
-                  Sort by Date {sortConfig.key === 'date' && (sortConfig.direction === 'ascending' ? '↑' : '↓')}
-                </button>
-                <button onClick={() => handleSort('user')}>
-                  Sort by User {sortConfig.key === 'user' && (sortConfig.direction === 'ascending' ? '↑' : '↓')}
-                </button>
-              </div>
-              <div className="feedback-list">
-                {filteredFeedbacks.map(feedback => (
+    <div className={isLoading ? "loading" : "loaded"}>
+      <Loading isLoading={isLoading} />
+      <div className="content_">
+        <Layout>
+          <div className="box-feedback">
+            <h2>Feedback</h2>
+
+            <div className="filter-section-feedback">
+              <label htmlFor="date">Filter by Date:</label>
+              <input
+                type="date"
+                name="date"
+                value={filters.date}
+                onChange={handleFilterChange}
+              />
+            </div>
+
+            <div className="sort-section-feedback">
+              <button onClick={() => handleSort("date")}>
+                Sort by Date{" "}
+                {sortConfig.key === "date" &&
+                  (sortConfig.direction === "ascending" ? "↑" : "↓")}
+              </button>
+
+              <button onClick={() => handleSort("user")}>
+                Sort by User{" "}
+                {sortConfig.key === "user" &&
+                  (sortConfig.direction === "ascending" ? "↑" : "↓")}
+              </button>
+            </div>
+
+            <div className="feedback-list">
+              {filteredFeedbacks.length === 0 ? (
+                <p>No feedback found</p>
+              ) : (
+                filteredFeedbacks.map((feedback) => (
                   <div key={feedback._id} className="feedback-item">
                     <p className="user-feedback">{feedback.user}</p>
-                    <p className="comment-feedback">"{feedback.subject}"</p>
-                    <p className="date-feedback">{new Date(feedback.date).toLocaleDateString()}</p>
-                    <p className="message-feedback">{feedback.message}</p>
+                    <p className="comment-feedback">
+                      "{feedback.subject}"
+                    </p>
+                    <p className="date-feedback">
+                      {new Date(feedback.date).toLocaleDateString()}
+                    </p>
+                    <p className="message-feedback">
+                      {feedback.message}
+                    </p>
                   </div>
-                ))}
-              </div>
+                ))
+              )}
             </div>
-          </Layout>
-        </div>
+          </div>
+        </Layout>
       </div>
-    </>
+    </div>
   );
 };
 
