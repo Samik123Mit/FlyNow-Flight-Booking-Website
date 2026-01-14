@@ -1,116 +1,178 @@
-# ✈️ FlyNow – Flight Booking Website
+# ✈️ FlyNow – Flight Booking Web Application (MERN Stack)
 
-Welcome to **FlyNow**, a modern flight booking web application built using the **MERN** stack. FlyNow enables users to **search, book, and manage flights** with ease, featuring **secure Razorpay payment integration** for seamless transactions.
-
-🔗 **Live Demo:** [https://flynow-five.vercel.app/](https://flynow-five.vercel.app/)  
-<<<<<<< HEAD
-
-🔗 **GitHub Repo:** [github.com/Samik123Mit/FlyNow-Flight-Booking-Website](https://github.com/Samik123Mit/FlyNow-Flight-Booking-Website)
-
-=======
-🔗 **GitHub Repo:** [github.com/Samik123Mit/FlyNow-Flight-Booking-Website](https://github.com/Samik123Mit/FlyNow-Flight-Booking-Website)
->>>>>>> f9c6f5a (Resolve README merge conflict)
+FlyNow is a full-stack flight booking web application built using the MERN stack.
+The platform enables users to search flights, book tickets, manage bookings,
+and complete secure online payments using Razorpay.
 
 ---
 
-## 📌 Overview
+## 🌐 Live Deployment
 
-FlyNow provides:
-- Flight search and listing
-- Booking management
-- Razorpay-powered secure payments
-- Mobile-responsive design with Tailwind CSS
-- Built on the robust MERN stack
+Frontend  
+https://fly-now-flight-booking-website.vercel.app/home
+
+Backend  
+Deployed on Render and securely consumed by the frontend
 
 ---
 
-## 🚀 Tech Stack
+## 📂 GitHub Repository
+
+https://github.com/Samik123Mit/FlyNow-Flight-Booking-Website
+
+---
+
+## 🧱 Tech Stack
 
 ### Frontend
-- **React.js** – Dynamic UI
-- **Tailwind CSS** – Utility-first CSS framework
-- **JavaScript (ES6+)**
+- React.js (Create React App)
+- React Router DOM
+- Context API (AuthContext)
+- Tailwind CSS
+- React Toastify
+- Razorpay Checkout SDK
 
 ### Backend
-- **Node.js** – Server-side runtime
-- **Express.js** – REST API framework
-- **MongoDB** – NoSQL database
-- **Razorpay** – Payment gateway integration
+- Node.js
+- Express.js
+- MongoDB (Mongoose)
+- JWT Authentication
+- Razorpay API
+
+### Deployment & Infrastructure
+- Frontend: Vercel
+- Backend: Render
+- Database: MongoDB Atlas
 
 ---
 
-## ⚙️ Local Setup
+## 📁 Project Structure
 
-### Clone the repository
-
-```bash
-git clone https://github.com/Samik123Mit/FlyNow-Flight-Booking-Website
-```
-
-### Setup Frontend
-
-```bash
-cd client
-npm install
-npm start
-```
-
-Frontend will run on [http://localhost:3000](http://localhost:3000)
-
-### Setup Backend
-
-```bash
-cd server
-npm install
-npm start
-```
-
-Backend will run on [http://localhost:8080](http://localhost:8080)
-
-> ⚠️ You must set up a `.env` file in `/server` with:
-```
-MONGO_URI=your_mongo_db_connection_string
-RAZORPAY_KEY=your_razorpay_key
-RAZORPAY_SECRET=your_razorpay_secret
-```
+FlyNow-Flight-Booking-Website/
+│
+├── client/
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── context/
+│   │   │   └── AuthContext.js
+│   │   ├── CSS/
+│   │   └── App.js
+│   └── package.json
+│
+├── server/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── model/
+│   ├── router/
+│   ├── db/
+│   └── index.js
+│
+└── README.md
 
 ---
 
-## 📦 Usage
+## 🔐 Authentication & Authorization
 
-1. Search and select flights
-2. Fill passenger details
-3. Make payments securely via Razorpay
-4. View/manage bookings after login
+- JWT-based authentication
+- Tokens stored in localStorage
+- Global authentication state managed using AuthContext
+- Protected routes for booking and admin functionality
 
-> Note: Some features like payment and DB may not work locally without valid API keys and URLs.
+---
+
+## 💳 Payments (Razorpay Integration)
+
+- Secure Razorpay payment gateway integration
+- Order creation handled on the backend
+- Payment verification performed server-side
+- Booking confirmed only after successful payment verification
+
+---
+
+## ⚙️ Environment Variables
+
+### Frontend (client/.env)
+
+REACT_APP_BACKEND_URL=https://your-backend-name.onrender.com
+
+### Backend (server/.env)
+
+MONGO_URI=your_mongodb_connection_string  
+JWT_SECRET=your_jwt_secret  
+RAZORPAY_KEY_ID=your_razorpay_key  
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret  
+
+---
+
+## 🧪 Local Development Setup
+
+### Clone the Repository
+
+git clone https://github.com/Samik123Mit/FlyNow-Flight-Booking-Website  
+cd FlyNow-Flight-Booking-Website  
+
+### Frontend Setup
+
+cd client  
+npm install  
+npm start  
+
+Runs on http://localhost:3000
+
+### Backend Setup
+
+cd server  
+npm install  
+npm start  
+
+Runs on http://localhost:8080
+
+---
+
+## 🚀 Features
+
+- Search flights with filters
+- View all available flights
+- User authentication (register and login)
+- Book flights with passenger details
+- Razorpay payment integration
+- View booked flights
+- Admin authentication and flight management
+- Fully responsive UI
+
+---
+
+## 🛠️ Deployment Notes
+
+- Frontend must not use localhost URLs in production
+- All API calls use REACT_APP_BACKEND_URL
+- AuthContext location:
+  client/src/context/AuthContext.js
+- File and folder name casing must match exactly (important for Linux and Vercel)
+- Vercel Root Directory:
+  client
 
 ---
 
 ## 🧑‍💻 Contributing
 
-We welcome contributions to enhance the app!  
-To contribute:
+git checkout -b feature/your-feature  
+git commit -m "Add feature"  
+git push origin feature/your-feature  
 
-```bash
-# Fork the repository and create your branch
-git checkout -b feature/your-feature-name
-
-# Commit changes
-git commit -m "Add new feature"
-
-# Push and create PR
-git push origin feature/your-feature-name
-```
+Open a Pull Request after pushing your changes.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **MIT License**.
+This project is licensed under the MIT License.
 
 ---
 
-## 🙋‍♂️ Maintainer
+## 👤 Maintainer
 
-Made with ❤️ by [Samiksha Mitra](https://github.com/Samik123Mit)
+Samiksha Mitra  
+GitHub: https://github.com/Samik123Mit
