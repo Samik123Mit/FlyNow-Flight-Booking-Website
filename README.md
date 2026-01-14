@@ -45,31 +45,8 @@ https://github.com/Samik123Mit/FlyNow-Flight-Booking-Website
 - Database: MongoDB Atlas
 
 ---
+<img width="437" height="768" alt="image" src="https://github.com/user-attachments/assets/92829bd6-532c-4b71-bddc-b62ad189cc1d" />
 
-## 📁 Project Structure
-
-FlyNow-Flight-Booking-Website/
-│
-├── client/
-│   ├── public/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── context/
-│   │   │   └── AuthContext.js
-│   │   ├── CSS/
-│   │   └── App.js
-│   └── package.json
-│
-├── server/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── model/
-│   ├── router/
-│   ├── db/
-│   └── index.js
-│
-└── README.md
 
 ---
 
